@@ -1,0 +1,257 @@
+<mah:MetroWindow x:Class="P25Scanner.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:P25Scanner"
+        xmlns:viewmodels="clr-namespace:P25Scanner.ViewModels"
+        xmlns:converters="clr-namespace:P25Scanner.Converters"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+        mc:Ignorable="d"
+        Title="P25 Scanner" Height="700" Width="1000"
+        WindowStartupLocation="CenterScreen"
+        GlowBrush="{DynamicResource MahApps.Brushes.Accent}"
+        TextOptions.TextFormattingMode="Display"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13">
+    
+    <mah:MetroWindow.Resources>
+        <ResourceDictionary>
+            
+            <!-- Value Converters -->
+            <converters:StatusToColorConverter x:Key="StatusToColorConverter" />
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        </ResourceDictionary>
+    </mah:MetroWindow.Resources>
+    
+    <mah:MetroWindow.DataContext>
+        <viewmodels:MainViewModel />
+    </mah:MetroWindow.DataContext>
+    
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />  <!-- Header -->
+            <RowDefinition Height="Auto" />  <!-- Current Status -->
+            <RowDefinition Height="Auto" />  <!-- Controls -->
+            <RowDefinition Height="Auto" />  <!-- Configuration -->
+            <RowDefinition Height="*" />     <!-- Signal History -->
+            <RowDefinition Height="Auto" />  <!-- Status Bar -->
+        </Grid.RowDefinitions>
+        
+        <!-- Header -->
+        <TextBlock Grid.Row="0" 
+                   Text="P25 Scanner" 
+                   Style="{StaticResource MahApps.Styles.TextBlock.Headline}" 
+                   Margin="0,0,0,16" 
+                   HorizontalAlignment="Center" />
+        
+        <!-- Current Status Card -->
+        <Border Grid.Row="1" Margin="0,0,0,16" Padding="16" 
+                BorderBrush="{DynamicResource MahApps.Brushes.Accent}" 
+                BorderThickness="1" 
+                CornerRadius="3">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                
+                <!-- Current Frequency -->
+                <StackPanel Grid.Column="0" Orientation="Vertical">
+                    <TextBlock Text="Current Frequency" 
+                               Style="{StaticResource MahApps.Styles.TextBlock.SubtitleHyphen}" />
+                    <TextBlock Text="{Binding CurrentFrequency, StringFormat='{}{0:N6} MHz'}" 
+                               Style="{StaticResource MahApps.Styles.TextBlock.Headline}"
+                               Foreground="{DynamicResource MahApps.Brushes.Accent}" />
+                </StackPanel>
+                
+                <!-- Scanner Status -->
+                <StackPanel Grid.Column="1" Orientation="Vertical">
+                    <TextBlock Text="Scanner Status" 
+                               Style="{StaticResource MahApps.Styles.TextBlock.SubtitleHyphen}" />
+                    <TextBlock Text="{Binding ScannerStatus}" 
+                               Style="{StaticResource MahApps.Styles.TextBlock.Headline}"
+                               Foreground="{Binding ScannerStatus, Converter={StaticResource StatusToColorConverter}}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+        
+        <!-- Controls -->
+        <Border Grid.Row="2" Margin="0,0,0,16" Padding="16" 
+                BorderBrush="{DynamicResource MahApps.Brushes.Accent}" 
+                BorderThickness="1" 
+                CornerRadius="3">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Command="{Binding StartCommand}" 
+                        Style="{StaticResource MahApps.Styles.Button.Square}"
+                        ToolTip="Start scanning" 
+                        Margin="8,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="▶" FontFamily="Segoe UI Symbol" Margin="0,0,8,0" />
+                        <TextBlock Text="Start" />
+                    </StackPanel>
+                </Button>
+                
+                <Button Command="{Binding StopCommand}" 
+                        Style="{StaticResource MahApps.Styles.Button.Square}"
+                        ToolTip="Stop scanning" 
+                        Margin="8,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="■" FontFamily="Segoe UI Symbol" Margin="0,0,8,0" />
+                        <TextBlock Text="Stop" />
+                    </StackPanel>
+                </Button>
+                
+                <Button Command="{Binding PauseCommand}" 
+                        Style="{StaticResource MahApps.Styles.Button}"
+                        ToolTip="Pause scanning" 
+                        Margin="8,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="⏸" FontFamily="Segoe UI Symbol" Margin="0,0,8,0" />
+                        <TextBlock Text="Pause" />
+                    </StackPanel>
+                </Button>
+                
+                <Button Command="{Binding HoldCommand}"
+                        Style="{StaticResource MahApps.Styles.Button.Accent}"
+                        ToolTip="Hold on current frequency" 
+                        Margin="8,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="✋" FontFamily="Segoe UI Symbol" Margin="0,0,8,0" />
+                        <TextBlock Text="Hold" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+        
+        <!-- Configuration -->
+        <Expander Grid.Row="3" 
+                  Header="Scanner Configuration" 
+                  IsExpanded="False"
+                  Margin="0,0,0,16">
+            <Border Padding="16" BorderBrush="{DynamicResource MahApps.Brushes.Accent}" BorderThickness="1" CornerRadius="3">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    
+                    <!-- Frequency Range -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" 
+                               Text="Start Frequency (MHz)" 
+                               Style="{StaticResource MahApps.Styles.TextBlock}"
+                               VerticalAlignment="Center" />
+                    <TextBox Grid.Row="0" Grid.Column="1" 
+                             Text="{Binding StartFrequency}" 
+                             Margin="8" />
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="0" 
+                               Text="End Frequency (MHz)" 
+                               Style="{StaticResource MahApps.Styles.TextBlock}"
+                               VerticalAlignment="Center" />
+                    <TextBox Grid.Row="1" Grid.Column="1" 
+                             Text="{Binding EndFrequency}" 
+                             Margin="8" />
+                    
+                    <!-- Step Size -->
+                    <TextBlock Grid.Row="2" Grid.Column="0" 
+                               Text="Step Size (kHz)"
+                               Style="{StaticResource MahApps.Styles.TextBlock}"
+                               VerticalAlignment="Center" />
+                    <TextBox Grid.Row="2" Grid.Column="1" 
+                             Text="{Binding StepSize}" 
+                             Margin="8" />
+                    
+                    <!-- Device Settings -->
+                    <TextBlock Grid.Row="0" Grid.Column="2" 
+                               Text="Gain" 
+                               Style="{StaticResource MahApps.Styles.TextBlock}"
+                               VerticalAlignment="Center" />
+                    <Slider Grid.Row="0" Grid.Column="3" 
+                            Value="{Binding Gain}" 
+                            Minimum="0" Maximum="50"
+                            TickFrequency="1"
+                            Margin="8" />
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="2" 
+                               Text="Squelch" 
+                               Style="{StaticResource MahApps.Styles.TextBlock}"
+                               VerticalAlignment="Center" />
+                    <Slider Grid.Row="1" Grid.Column="3" 
+                            Value="{Binding Squelch}" 
+                            Minimum="0" Maximum="100"
+                            TickFrequency="5"
+                            Margin="8" />
+                    
+                    <Button Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="2"
+                            Command="{Binding ApplyConfigCommand}"
+                            Content="Apply Configuration"
+                            Style="{StaticResource MahApps.Styles.Button}"
+                            HorizontalAlignment="Center"
+                            Margin="8" />
+                </Grid>
+            </Border>
+        </Expander>
+        
+        <!-- Signal History -->
+        <Border Grid.Row="4" Padding="16" BorderBrush="{DynamicResource MahApps.Brushes.Accent}" BorderThickness="1" CornerRadius="3">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                
+                <TextBlock Grid.Row="0" 
+                           Text="Signal History" 
+                           Style="{StaticResource MahApps.Styles.TextBlock.Headline}"
+                           Margin="0,0,0,8" />
+                
+                <DataGrid Grid.Row="1"
+                          ItemsSource="{Binding SignalHistory}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserSortColumns="True"
+                          Padding="13 8 8 8">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Time" 
+                                            Binding="{Binding Timestamp, StringFormat='{}{0:HH:mm:ss}'}" 
+                                            Width="100" />
+                        <DataGridTextColumn Header="Frequency" 
+                                            Binding="{Binding Frequency, StringFormat='{}{0:N6} MHz'}" 
+                                            Width="120" />
+                        <DataGridTextColumn Header="System" 
+                                            Binding="{Binding System}" 
+                                            Width="100" />
+                        <DataGridTextColumn Header="TGID" 
+                                            Binding="{Binding TalkGroupId}" 
+                                            Width="80" />
+                        <DataGridTextColumn Header="Signal Level" 
+                                            Binding="{Binding SignalLevel, StringFormat='{}{0:N1} dB'}" 
+                                            Width="100" />
+                        <DataGridTextColumn Header="Description" 
+                                            Binding="{Binding Description}" 
+                                            Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+        
+        <!-- Status Bar -->
+        <StatusBar Grid.Row="5" Margin="0,16,0,0">
+            <TextBlock Text="{Binding StatusMessage}" />
+            <Separator />
+            <TextBlock Text="{Binding DeviceInfo}" />
+            <Separator />
+            <ProgressBar Value="{Binding Progress}" 
+                         Width="100" 
+                         Visibility="{Binding IsScanning, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        </StatusBar>
+    </Grid>
+</mah:MetroWindow>
