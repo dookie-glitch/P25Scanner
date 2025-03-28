@@ -1,0 +1,70 @@
+# P25Scanner Packaging Instructions
+
+## Step 1: Build the Project
+1. Open your project in Visual Studio
+2. Set the build configuration to "Release"
+3. Build the solution (Build > Build Solution or press Ctrl+Shift+B)
+4. Wait for the build to complete successfully
+
+## Step 2: Prepare Files for Packaging
+1. Create a new folder on your desktop called "P25ScannerRelease"
+2. Copy the following from your project's output directory (typically bin\Release\net7.0) to this folder:
+   - P25Scanner.exe (the main executable)
+   - All DLL files
+   - appsettings.json
+   - Any other configuration files
+3. Copy the README.md file to the P25ScannerRelease folder
+4. Copy any documentation files, including TECHNICAL.md if available
+5. Create a "Logs" folder inside P25ScannerRelease
+6. Create a "Recordings" folder inside P25ScannerRelease
+7. Create a "ChannelLists" folder inside P25ScannerRelease
+
+## Step 3: Create ZIP Archive
+1. Right-click on the P25ScannerRelease folder
+2. Select "Send to" > "Compressed (zipped) folder"
+3. Rename the zip file to "p25scannair.zip"
+4. Move the zip file to your desktop if it's not already there
+
+## Alternative Method Using PowerShell
+You can also use PowerShell to automate this process:
+
+```powershell
+# Set variables
+$buildFolder = "path\to\your\project\bin\Release\net7.0"
+$desktopPath = [Environment]::GetFolderPath("Desktop")
+$releaseFolderName = "P25ScannerRelease"
+$releaseFolder = Join-Path -Path $desktopPath -ChildPath $releaseFolderName
+$zipFileName = "p25scannair.zip"
+$zipFilePath = Join-Path -Path $desktopPath -ChildPath $zipFileName
+
+# Create release folder
+New-Item -ItemType Directory -Force -Path $releaseFolder
+
+# Copy necessary files
+Copy-Item -Path "$buildFolder\*" -Destination $releaseFolder -Recurse
+Copy-Item -Path "README.md" -Destination $releaseFolder
+Copy-Item -Path "TECHNICAL.md" -Destination $releaseFolder -ErrorAction SilentlyContinue
+
+# Create subdirectories
+New-Item -ItemType Directory -Force -Path "$releaseFolder\Logs"
+New-Item -ItemType Directory -Force -Path "$releaseFolder\Recordings"
+New-Item -ItemType Directory -Force -Path "$releaseFolder\ChannelLists"
+
+# Create zip file
+Compress-Archive -Path $releaseFolder -DestinationPath $zipFilePath -Force
+
+# Optional: Clean up temporary folder
+Remove-Item -Path $releaseFolder -Recurse -Force
+
+Write-Host "Package created at: $zipFilePath"
+```
+
+## What's Included in the Package
+- P25Scanner executable and dependencies
+- Configuration files
+- Documentation (README.md and TECHNICAL.md)
+- Empty folders for logs, recordings, and channel lists
+
+## Running the Application
+After extracting the zip file, run P25Scanner.exe to start the application.
+
